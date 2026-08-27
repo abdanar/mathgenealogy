@@ -2,16 +2,12 @@ import Link from "next/link";
 import type { Mathematician } from "@/types/genealogy";
 
 function PersonEntry({ mathematician }: { mathematician: Mathematician }) {
-  const degree = [mathematician.university, mathematician.degreeYear]
-    .filter(Boolean)
-    .join(" · ");
-
   return (
     <li className="genealogy-list__entry">
       <Link className="genealogy-list__link" href={`/mathematician/${mathematician.id}`}>
         <div className="genealogy-list__person">
           <h3>{mathematician.name}</h3>
-          {degree && <p className="genealogy-list__degree">{degree}</p>}
+          {mathematician.university && <p className="genealogy-list__institution">{mathematician.university}</p>}
           {mathematician.dissertation && (
             <p className="genealogy-list__dissertation">{mathematician.dissertation}</p>
           )}

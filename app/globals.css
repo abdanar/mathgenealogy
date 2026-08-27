@@ -53,20 +53,19 @@ a { color: inherit; }
 .mathematician-header__dissertation p:first-child { color: var(--ink); font-family: var(--font-geist-sans), sans-serif; font-size: 0.72rem; font-style: normal; letter-spacing: 0.07em; text-transform: uppercase; }
 .mathematician-header__dissertation p + p { margin-top: 4px; }
 .mathematician-header__fields { color: var(--accent); }
-.genealogy-list { width: min(100%, 880px); border-top: 1px solid var(--line); }
-.genealogy-list { margin-top: 8px; padding-top: 28px; }
-.genealogy-list h2 { margin: 0 0 16px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
+.genealogy-list { width: min(100%, 800px); margin-top: 8px; border-top: 1px solid var(--line); padding-top: 30px; }
+.genealogy-list h2 { margin: 0 0 18px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
 .genealogy-list__entries { margin: 0; padding: 0; list-style: none; }
 .genealogy-list__entry { border-top: 1px solid var(--line); }
 .genealogy-list__entry:last-child { border-bottom: 1px solid var(--line); }
-.genealogy-list__link { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; padding: 17px 4px 18px 0; text-decoration: none; transition: color 150ms ease; }
+.genealogy-list__link { display: grid; grid-template-columns: minmax(0, 1fr) 4ch; gap: 28px; padding: 20px 4px 21px 0; text-decoration: none; transition: color 150ms ease; }
 .genealogy-list__link:hover h3, .genealogy-list__link:focus-visible h3 { color: var(--accent); }
 .genealogy-list__link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .genealogy-list__person { min-width: 0; }
-.genealogy-list h3 { margin: 0; font-size: 1.08rem; font-weight: 400; line-height: 1.25; }
-.genealogy-list__degree, .genealogy-list__dissertation, .genealogy-list__empty { margin: 5px 0 0; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.8rem; line-height: 1.45; }
-.genealogy-list__dissertation { font-family: Georgia, "Times New Roman", serif; font-size: 0.88rem; font-style: italic; }
-.genealogy-list__year { padding-top: 2px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; }
+.genealogy-list h3 { margin: 0; font-size: 1.12rem; font-weight: 400; line-height: 1.25; }
+.genealogy-list__institution, .genealogy-list__empty { margin: 5px 0 0; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; line-height: 1.45; }
+.genealogy-list__dissertation { max-width: 62ch; margin: 7px 0 0; color: #6e726c; font-size: 0.9rem; font-style: italic; line-height: 1.5; }
+.genealogy-list__year { padding-top: 3px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; text-align: right; }
 .genealogy { border-top: 1px solid var(--line); padding-top: 18px; }
 .genealogy__heading { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }
 .genealogy h2 { margin: 0; font-family: var(--font-geist-sans), sans-serif; font-size: 0.88rem; font-weight: 600; }
@@ -91,6 +90,9 @@ a { color: inherit; }
   .profile__search { align-items: flex-start; flex-direction: column; gap: 15px; }
   .search--compact { width: 100%; }
   .mathematician-header { padding: 51px 0 42px; }
+  .genealogy-list__link { grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 18px 0 19px; }
+  .genealogy-list h3 { font-size: 1.04rem; }
+  .genealogy-list__dissertation { max-width: none; font-size: 0.87rem; }
   .genealogy__canvas { height: 480px; margin-right: -18px; margin-left: -18px; }
   .data-sources { padding: 24px 18px 52px; }
   .data-sources article { padding-top: 54px; }
