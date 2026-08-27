@@ -6,6 +6,7 @@
   --line: #dedfd9;
   --paper: #fbfbf8;
   --accent: #385d52;
+  --page-width: 1240px;
 }
 
 @theme inline {
@@ -39,11 +40,13 @@ a { color: inherit; }
 .search-result span { font-size: 0.96rem; }
 .search-result small { margin-top: 3px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.72rem; }
 .search__empty { margin: 0; padding: 15px 16px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.85rem; }
-.profile { width: min(100%, 1240px); margin: 0 auto; padding: 26px 42px 56px; }
+.profile { width: min(100%, var(--page-width)); margin: 0 auto; padding: 26px 42px 56px; }
 .profile__search { display: flex; align-items: center; justify-content: space-between; gap: 32px; border-bottom: 1px solid var(--line); padding-bottom: 21px; }
 .profile__tools { display: flex; align-items: center; gap: 16px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; }
 .profile__tools > a { color: var(--muted); text-decoration-color: #babcb5; text-underline-offset: 3px; }
+.profile__tools > a:hover, .profile__tools > a:focus-visible, .profile__tools > a[aria-current="page"] { color: var(--accent); }
 .wordmark { text-decoration: none; font-size: 1.2rem; }
+.wordmark:hover, .wordmark:focus-visible { color: var(--accent); }
 .mathematician-header { padding: 82px 0 62px; }
 .mathematician-header h1 { margin: 0; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 400; letter-spacing: 0; line-height: 1.04; }
 .mathematician-header p { margin: 10px 0 0; }
@@ -87,10 +90,10 @@ a { color: inherit; }
 .data-sources h2 { margin: 44px 0 12px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.9rem; font-weight: 600; }
 .data-sources p { max-width: 650px; color: #4f544f; font-size: 1.05rem; line-height: 1.65; }
 .data-sources code { font-family: var(--font-geist-mono), monospace; font-size: 0.84em; }
-.path-page { width: min(100%, 880px); margin: 0 auto; padding: 26px 42px 80px; }
+.path-page { width: min(100%, var(--page-width)); margin: 0 auto; padding: 26px 42px 80px; }
 .path-page__header { padding: 76px 0 38px; }
 .path-page__header h1 { margin: 10px 0 0; font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 400; line-height: 1.05; }
-.path-form { display: grid; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 18px; }
+.path-form { display: grid; width: min(100%, 800px); grid-template-columns: 1fr 1fr auto; align-items: end; gap: 18px; }
 .path-picker { position: relative; }
 .path-picker label { display: block; margin-bottom: 8px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
 .path-picker input { width: 100%; border: 1px solid #b9bcb4; border-radius: 2px; background: #fff; color: var(--ink); padding: 12px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.88rem; outline: none; }

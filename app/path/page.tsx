@@ -9,7 +9,10 @@ export default function PathPage() {
     <main className="path-page">
       <div className="profile__search">
         <Link className="wordmark" href="/">MathGenealogy</Link>
-        <div className="profile__tools"><SearchBar compact /><Link href="/path">Path</Link></div>
+        <div className="profile__tools">
+          <SearchBar compact />
+          <Link aria-current="page" href="/path">Path</Link>
+        </div>
       </div>
       <header className="path-page__header">
         <p className="eyebrow">Academic genealogy</p>

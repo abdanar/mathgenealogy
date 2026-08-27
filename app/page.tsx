@@ -8,7 +8,7 @@ export default function Home() {
         <p className="eyebrow">Academic genealogy of mathematics</p>
         <h1>MathGenealogy</h1>
         <SearchBar autoFocus />
-        <Link className="home__path" href="/path">Find a genealogy path</Link>
+        <Link className="home__path" href="/path">Find a genealogy path <span aria-hidden="true">→</span></Link>
       </div>
     </main>
   );
