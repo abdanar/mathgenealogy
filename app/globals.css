@@ -42,13 +42,16 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .search-result small { margin-top: 3px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.72rem; }
 .search__empty { margin: 0; padding: 15px 16px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.85rem; }
 .profile { width: min(100%, var(--page-width)); margin: 0 auto; padding: 26px 42px 56px; }
-.profile__search { display: flex; align-items: center; justify-content: space-between; gap: 32px; border-bottom: 1px solid var(--line); padding-bottom: 21px; }
+.profile__search { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
 .profile__tools { display: flex; align-items: center; gap: 16px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; }
 .profile__tools > a { color: var(--muted); text-decoration-color: #babcb5; text-underline-offset: 3px; }
 .profile__tools > a:hover, .profile__tools > a:focus-visible, .profile__tools > a[aria-current="page"] { color: var(--accent); }
 .wordmark { text-decoration: none; font-size: 1.2rem; }
 .wordmark:hover, .wordmark:focus-visible { color: var(--accent); }
-.mathematician-header { padding: 82px 0 62px; }
+.header-search-toggle { display: grid; width: 24px; height: 24px; place-items: center; border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 0; }
+.header-search-toggle:hover, .header-search-toggle:focus-visible { color: var(--accent); }
+.header-search-toggle svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.75; }
+.mathematician-header { padding: 82px 0 28px; }
 .mathematician-header h1 { margin: 0; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 400; letter-spacing: 0; line-height: 1.04; }
 .mathematician-header p { margin: 10px 0 0; }
 .mathematician-header h1, .mathematician-header__dissertation, .genealogy-list h3, .genealogy-list__institution, .genealogy-list__dissertation, .path-picker__results span, .path-picker__results small, .path-result strong, .path-result small { overflow-wrap: anywhere; }
@@ -61,11 +64,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .mathematician-header__dissertation p:first-child { color: var(--ink); font-family: var(--font-geist-sans), sans-serif; font-size: 0.72rem; font-style: normal; letter-spacing: 0.07em; text-transform: uppercase; }
 .mathematician-header__dissertation p + p { margin-top: 4px; }
 .mathematician-header__fields { color: var(--accent); }
-.genealogy-list { width: min(100%, 800px); margin-top: 8px; border-top: 1px solid var(--line); padding-top: 30px; }
-.genealogy-list h2 { margin: 0 0 18px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
+.genealogy-list { width: min(100%, 800px); }
+.genealogy-list h2 { margin: 0 0 18px; border-bottom: 1px solid var(--line); padding-bottom: 12px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
 .genealogy-list__entries { margin: 0; padding: 0; list-style: none; }
-.genealogy-list__entry { border-top: 1px solid var(--line); }
-.genealogy-list__entry:last-child { border-bottom: 1px solid var(--line); }
+.genealogy-list__entry + .genealogy-list__entry { border-top: 1px solid var(--line); }
 .genealogy-list__link { display: grid; grid-template-columns: minmax(0, 1fr) 4ch; gap: 28px; padding: 20px 4px 21px 0; text-decoration: none; transition: color 150ms ease; }
 .genealogy-list__link:hover h3, .genealogy-list__link:focus-visible h3 { color: var(--accent); }
 .genealogy-list__link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -120,13 +122,31 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .path-result__connector::after { display: block; padding-top: 23px; color: #999d94; content: "↓"; font-family: var(--font-geist-sans), sans-serif; font-size: 0.82rem; transform: translateX(-4px); }
 .path-result > p, .path-empty { margin: 28px 0 0; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.8rem; }
 .path-empty { border-top: 1px solid var(--line); padding-top: 22px; }
+.search-page { width: min(100%, var(--page-width)); margin: 0 auto; padding: 26px 42px 80px; }
+.search-page__header { padding: 76px 0 38px; }
+.search-page__header h1 { max-width: 760px; margin: 10px 0 0; font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 400; line-height: 1.05; overflow-wrap: anywhere; }
+.search-page__results { width: min(100%, 800px); margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.search-page__results li { border-bottom: 1px solid var(--line); }
+.search-page__results a { display: block; padding: 20px 0 21px; text-decoration: none; }
+.search-page__results h2 { margin: 0; font-size: 1.12rem; font-weight: 400; line-height: 1.25; overflow-wrap: anywhere; }
+.search-page__results p, .search-page__empty { margin: 5px 0 0; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; line-height: 1.45; overflow-wrap: anywhere; }
+.search-page__results .search-page__dissertation { max-width: 62ch; margin-top: 7px; color: #6e726c; font-family: Georgia, "Times New Roman", serif; font-size: 0.9rem; font-style: italic; line-height: 1.5; }
+.search-page__results a:hover h2, .search-page__results a:focus-visible h2 { color: var(--accent); }
+.search-page__empty { border-top: 1px solid var(--line); padding-top: 22px; }
+.search-pagination { display: flex; align-items: center; gap: 14px; width: min(100%, 800px); margin-top: 28px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; }
+.search-pagination a { color: var(--ink); text-decoration-color: #babcb5; text-underline-offset: 3px; }
+.search-pagination a:hover, .search-pagination a:focus-visible { color: var(--accent); }
+.search-pagination > span { color: #9a9d96; }
+.search-pagination__numbers { display: flex; gap: 10px; }
+.search-pagination__current { color: var(--accent) !important; font-weight: 600; }
+.search-pagination__status { display: none; }
 
 @media (max-width: 640px) {
   .profile { padding: 18px 18px 30px; }
   .profile__search { align-items: flex-start; flex-direction: column; gap: 15px; }
   .profile__tools { width: 100%; justify-content: space-between; }
   .search--compact { width: 100%; }
-  .mathematician-header { padding: 51px 0 42px; }
+  .mathematician-header { padding: 51px 0 28px; }
   .genealogy-list__link { grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 18px 0 19px; }
   .genealogy-list h3 { font-size: 1.04rem; }
   .genealogy-list__dissertation { max-width: none; font-size: 0.87rem; }
@@ -137,4 +157,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
   .path-page__header { padding: 54px 0 32px; }
   .path-form { grid-template-columns: 1fr; gap: 16px; }
   .path-form > button { width: fit-content; padding: 0 18px; }
+  .search-page { padding: 18px 18px 52px; }
+  .search-page__header { padding: 54px 0 32px; }
+  .search-pagination { justify-content: space-between; gap: 10px; }
+  .search-pagination__numbers { display: none; }
+  .search-pagination__status { display: inline; }
 }

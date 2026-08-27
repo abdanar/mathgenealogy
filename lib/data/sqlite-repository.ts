@@ -2,7 +2,7 @@ import "server-only";
 
 import { join } from "node:path";
 import Database from "better-sqlite3";
-import type { GenealogyRepository } from "@/lib/data/repository";
+import type { GenealogyRepository, PaginatedMathematicians } from "@/lib/data/repository";
 import type { GenealogyPath, Mathematician } from "@/types/genealogy";
 
 type PersonRow = {
@@ -18,6 +18,8 @@ type PersonRow = {
 
 const database = new Database(join(process.cwd(), "data", "mg.db"), { readonly: true });
 const maximumPathExpansions = 100_000;
+const autocompleteSearchLimit = 12;
+const searchResultsPageSize = 20;
 let studentIdsByAdvisor: Map<string, string[]> | undefined;
 
 const personSelect = `
@@ -91,7 +93,7 @@ async function getMathematician(id: string) {
   return row ? toMathematician(row) : undefined;
 }
 
-async function searchMathematicians(query: string) {
+async function searchMathematiciansWithLimit(query: string, limit: number) {
   const normalizedQuery = normalizedSearchQuery(query);
   if (!normalizedQuery) return [];
 
@@ -99,10 +101,38 @@ async function searchMathematicians(query: string) {
     `${personSelect}
      WHERE replace(lower(trim(p.FNAME || ' ' || coalesce(p.ONAME, '') || ' ' || p.LNAME)), char(223), 'ss') LIKE ?
        ORDER BY CASE WHEN replace(lower(p.LNAME), char(223), 'ss') = ? THEN 0 ELSE 1 END, p.FNAME, p.ONAME, p.LNAME
-     LIMIT 12`,
+     LIMIT ?`,
     `%${normalizedQuery}%`,
-      normalizedQuery,
+    normalizedQuery,
+    limit,
   );
+}
+
+async function searchMathematicians(query: string) {
+  return searchMathematiciansWithLimit(query, autocompleteSearchLimit);
+}
+
+async function searchMathematiciansForResults(query: string, requestedPage: number): Promise<PaginatedMathematicians> {
+  const normalizedQuery = normalizedSearchQuery(query);
+  if (!normalizedQuery) return { mathematicians: [], page: 1, total: 0, totalPages: 0 };
+
+  const searchPattern = `%${normalizedQuery}%`;
+  const predicate = "replace(lower(trim(p.FNAME || ' ' || coalesce(p.ONAME, '') || ' ' || p.LNAME)), char(223), 'ss') LIKE ?";
+  const total = (database.prepare(`SELECT COUNT(*) AS total FROM PERSONS p WHERE ${predicate}`).get(searchPattern) as { total: number }).total;
+  const totalPages = Math.ceil(total / searchResultsPageSize);
+  const page = totalPages ? Math.min(Math.max(1, requestedPage), totalPages) : 1;
+  const mathematicians = getPeople(
+    `${personSelect}
+     WHERE ${predicate}
+     ORDER BY CASE WHEN replace(lower(p.LNAME), char(223), 'ss') = ? THEN 0 ELSE 1 END, p.FNAME, p.ONAME, p.LNAME
+     LIMIT ? OFFSET ?`,
+    searchPattern,
+    normalizedQuery,
+    searchResultsPageSize,
+    (page - 1) * searchResultsPageSize,
+  );
+
+  return { mathematicians, page, total, totalPages };
 }
 
 async function getAdvisors(id: string) {
@@ -176,6 +206,7 @@ async function findDescendantPath(sourceId: string, targetId: string): Promise<G
 export const sqliteGenealogyRepository: GenealogyRepository = {
   getMathematician,
   searchMathematicians,
+  searchMathematiciansForResults,
   getAdvisors,
   getStudents,
   getLocalGenealogy,

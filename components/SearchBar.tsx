@@ -8,9 +8,10 @@ import type { Mathematician } from "@/types/genealogy";
 type SearchBarProps = {
   autoFocus?: boolean;
   compact?: boolean;
+  onEscape?: () => void;
 };
 
-export function SearchBar({ autoFocus = false, compact = false }: SearchBarProps) {
+export function SearchBar({ autoFocus = false, compact = false, onEscape }: SearchBarProps) {
   const router = useRouter();
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -43,26 +44,28 @@ export function SearchBar({ autoFocus = false, compact = false }: SearchBarProps
       setQuery("");
       setResults([]);
       inputRef.current?.blur();
+      onEscape?.();
       return;
     }
 
-    if (!results.length) return;
-
-    if (event.key === "ArrowDown") {
+    if (event.key === "ArrowDown" && results.length) {
       event.preventDefault();
       setActiveIndex((index) => (index + 1) % results.length);
     }
 
-    if (event.key === "ArrowUp") {
+    if (event.key === "ArrowUp" && results.length) {
       event.preventDefault();
       setActiveIndex((index) => (index <= 0 ? results.length - 1 : index - 1));
     }
 
     if (event.key === "Enter") {
-      const mathematician = results[activeIndex] ?? results[0];
+      const mathematician = results[activeIndex];
       if (mathematician) {
         event.preventDefault();
         selectMathematician(mathematician);
+      } else if (query.trim()) {
+        event.preventDefault();
+        router.push(`/search?q=${encodeURIComponent(query.trim())}`);
       }
     }
   }

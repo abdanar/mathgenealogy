@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { HeaderSearch } from "@/components/HeaderSearch";
 import { PathFinder } from "@/components/PathFinder";
-import { SearchBar } from "@/components/SearchBar";
 
 export const metadata = { title: "Path | MathGenealogy" };
 
@@ -10,8 +10,8 @@ export default function PathPage() {
       <div className="profile__search">
         <Link className="wordmark" href="/">MathGenealogy</Link>
         <div className="profile__tools">
-          <SearchBar compact />
           <Link aria-current="page" href="/path">Path</Link>
+          <HeaderSearch />
         </div>
       </div>
       <header className="path-page__header">

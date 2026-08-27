@@ -1,6 +1,6 @@
 import { GenealogyList } from "@/components/GenealogyList";
+import { HeaderSearch } from "@/components/HeaderSearch";
 import { MathematicianHeader } from "@/components/MathematicianHeader";
-import { SearchBar } from "@/components/SearchBar";
 import { getLocalGenealogy } from "@/lib/genealogy";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -18,8 +18,8 @@ export default async function MathematicianPage({
       <div className="profile__search">
         <Link className="wordmark" href="/">MathGenealogy</Link>
         <div className="profile__tools">
-          <SearchBar compact />
           <Link href="/path">Path</Link>
+          <HeaderSearch />
         </div>
       </div>
       <MathematicianHeader mathematician={genealogy.subject} advisors={genealogy.advisors} />
