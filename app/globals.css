@@ -46,6 +46,7 @@ a { color: inherit; }
 .mathematician-header p { margin: 10px 0 0; }
 .mathematician-header__lifespan { color: var(--muted); font-size: 1.25rem; }
 .mathematician-header__degree, .mathematician-header__fields { color: #4f544f; font-family: var(--font-geist-sans), sans-serif; font-size: 0.9rem; }
+.mathematician-header__dissertation { max-width: 760px; color: var(--muted); font-size: 0.95rem; font-style: italic; line-height: 1.5; }
 .mathematician-header__fields { color: var(--accent); }
 .genealogy { border-top: 1px solid var(--line); padding-top: 19px; }
 .genealogy__heading { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }

@@ -7,6 +7,7 @@ export function MathematicianHeader({ mathematician }: { mathematician: Mathemat
       <h1>{mathematician.name}</h1>
       {lifespan && <p className="mathematician-header__lifespan">{lifespan}</p>}
       {(mathematician.university || mathematician.degreeYear) && <p className="mathematician-header__degree">{mathematician.university}{mathematician.university && mathematician.degreeYear ? " · " : ""}{mathematician.degreeYear ? `PhD ${mathematician.degreeYear}` : ""}</p>}
+      {mathematician.dissertation && <p className="mathematician-header__dissertation">{mathematician.dissertation}</p>}
       {mathematician.fields && <p className="mathematician-header__fields">{mathematician.fields.join(" · ")}</p>}
     </header>
   );

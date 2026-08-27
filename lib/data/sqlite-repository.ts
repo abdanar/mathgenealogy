@@ -13,6 +13,7 @@ type PersonRow = {
   degreeYear: number | null;
   university: string | null;
   dissertation: string | null;
+  fields: string | null;
 };
 
 const database = new Database(join(process.cwd(), "data", "mg.db"), { readonly: true });
@@ -25,7 +26,16 @@ const personSelect = `
     p.LNAME AS lastName,
     degree.DEGYEAR AS degreeYear,
     degree.SCHOOL AS university,
-    degree.TITLE AS dissertation
+    degree.TITLE AS dissertation,
+    (
+      SELECT group_concat(msc.NAME, ' | ')
+      FROM FIELDS field
+      JOIN MSC msc ON msc.CODE = CASE
+        WHEN field.GIVENFIELD <> 'NA' THEN field.GIVENFIELD
+        ELSE field.INFERREDFIELD
+      END
+      WHERE field.MGID = p.MGID
+    ) AS fields
   FROM PERSONS p
   LEFT JOIN DEGREES degree ON degree.rowid = (
     SELECT d.rowid
@@ -43,6 +53,7 @@ function toMathematician(row: PersonRow): Mathematician {
     degreeYear: row.degreeYear ?? undefined,
     university: row.university ?? undefined,
     dissertation: row.dissertation ?? undefined,
+    fields: row.fields?.split(" | "),
   };
 }
 
