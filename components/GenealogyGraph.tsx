@@ -2,7 +2,6 @@
 
 import dagre from "@dagrejs/dagre";
 import {
-  Background,
   Handle,
   Position,
   ReactFlow,
@@ -15,8 +14,9 @@ import type { LocalGenealogy, Mathematician } from "@/types/genealogy";
 import "@xyflow/react/dist/style.css";
 
 type MathematicianNodeData = { mathematician: Mathematician; isSubject: boolean };
-const nodeWidth = 218;
-const nodeHeight = 76;
+const nodeWidth = 194;
+const nodeHeight = 64;
+const studentColumns = 5;
 
 function MathematicianNode({ data }: NodeProps<Node<MathematicianNodeData>>) {
   return (
@@ -33,10 +33,17 @@ function MathematicianNode({ data }: NodeProps<Node<MathematicianNodeData>>) {
 
 const nodeTypes = { mathematician: MathematicianNode };
 
-function layoutGraph(genealogy: LocalGenealogy) {
+function layoutGraph(genealogy: LocalGenealogy): {
+  nodes: Node<MathematicianNodeData>[];
+  edges: Edge[];
+} {
+  if (genealogy.students.length > studentColumns) {
+    return layoutLargeGenealogy(genealogy);
+  }
+
   const graph = new dagre.graphlib.Graph();
   graph.setDefaultEdgeLabel(() => ({}));
-  graph.setGraph({ rankdir: "TB", nodesep: 42, ranksep: 74, marginx: 28, marginy: 28 });
+  graph.setGraph({ rankdir: "TB", nodesep: 28, ranksep: 70, marginx: 36, marginy: 32 });
   const people = [...genealogy.advisors, genealogy.subject, ...genealogy.students];
 
   people.forEach((mathematician) => graph.setNode(mathematician.id, { width: nodeWidth, height: nodeHeight }));
@@ -57,10 +64,61 @@ function layoutGraph(genealogy: LocalGenealogy) {
     id: `${relationship.advisorId}-${relationship.studentId}`,
     source: relationship.advisorId,
     target: relationship.studentId,
-    type: "straight",
+    type: "smoothstep",
   }));
 
   return { nodes, edges };
+}
+
+function layoutLargeGenealogy(genealogy: LocalGenealogy): {
+  nodes: Node<MathematicianNodeData>[];
+  edges: Edge[];
+} {
+  const studentsPerRow = studentColumns;
+  const columnGap = 24;
+  const rowGap = 32;
+  const advisorY = 24;
+  const subjectY = 150;
+  const studentY = 276;
+  const studentGridWidth = studentsPerRow * nodeWidth + (studentsPerRow - 1) * columnGap;
+  const centerX = studentGridWidth / 2 - nodeWidth / 2;
+  const advisorWidth = Math.max(
+    nodeWidth,
+    genealogy.advisors.length * nodeWidth + Math.max(0, genealogy.advisors.length - 1) * columnGap,
+  );
+
+  const positionedPeople = [
+    ...genealogy.advisors.map((mathematician, index) => ({
+      mathematician,
+      position: {
+        x: (studentGridWidth - advisorWidth) / 2 + index * (nodeWidth + columnGap),
+        y: advisorY,
+      },
+    })),
+    { mathematician: genealogy.subject, position: { x: centerX, y: subjectY } },
+    ...genealogy.students.map((mathematician, index) => ({
+      mathematician,
+      position: {
+        x: index % studentsPerRow * (nodeWidth + columnGap),
+        y: studentY + Math.floor(index / studentsPerRow) * (nodeHeight + rowGap),
+      },
+    })),
+  ];
+
+  return {
+    nodes: positionedPeople.map(({ mathematician, position }) => ({
+      id: mathematician.id,
+      type: "mathematician",
+      data: { mathematician, isSubject: mathematician.id === genealogy.subject.id },
+      position,
+    })),
+    edges: genealogy.relationships.map((relationship) => ({
+      id: `${relationship.advisorId}-${relationship.studentId}`,
+      source: relationship.advisorId,
+      target: relationship.studentId,
+      type: "smoothstep",
+    })),
+  };
 }
 
 export function GenealogyGraph({ genealogy }: { genealogy: LocalGenealogy }) {
@@ -74,8 +132,7 @@ export function GenealogyGraph({ genealogy }: { genealogy: LocalGenealogy }) {
         <p>{genealogy.advisors.length} advisor{genealogy.advisors.length === 1 ? "" : "s"} · {genealogy.students.length} immediate student{genealogy.students.length === 1 ? "" : "s"}</p>
       </div>
       <div className="genealogy__canvas">
-        <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.3 }} minZoom={0.5} maxZoom={1.4} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false} onNodeClick={(_, node) => router.push(`/mathematician/${node.id}`)}>
-          <Background gap={20} size={1} color="#e8e7e2" />
+        <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.18, minZoom: 0.68, maxZoom: 1 }} minZoom={0.6} maxZoom={1.25} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false} onNodeClick={(_, node) => router.push(`/mathematician/${node.id}`)}>
         </ReactFlow>
       </div>
     </section>

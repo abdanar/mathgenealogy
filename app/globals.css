@@ -38,27 +38,28 @@ a { color: inherit; }
 .search-result span { font-size: 0.96rem; }
 .search-result small { margin-top: 3px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.72rem; }
 .search__empty { margin: 0; padding: 15px 16px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.85rem; }
-.profile { width: min(100%, 1160px); margin: 0 auto; padding: 26px 30px 48px; }
+.profile { width: min(100%, 1240px); margin: 0 auto; padding: 26px 42px 56px; }
 .profile__search { display: flex; align-items: center; justify-content: space-between; gap: 32px; border-bottom: 1px solid var(--line); padding-bottom: 21px; }
 .wordmark { text-decoration: none; font-size: 1.2rem; }
-.mathematician-header { padding: 72px 0 55px; }
-.mathematician-header h1 { margin: 0; font-size: clamp(2.6rem, 6vw, 4.3rem); font-weight: 400; line-height: 1.04; }
+.mathematician-header { padding: 82px 0 62px; }
+.mathematician-header h1 { margin: 0; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 400; letter-spacing: 0; line-height: 1.04; }
 .mathematician-header p { margin: 10px 0 0; }
 .mathematician-header__lifespan { color: var(--muted); font-size: 1.25rem; }
-.mathematician-header__degree, .mathematician-header__fields { color: #4f544f; font-family: var(--font-geist-sans), sans-serif; font-size: 0.9rem; }
-.mathematician-header__dissertation { max-width: 760px; color: var(--muted); font-size: 0.95rem; font-style: italic; line-height: 1.5; }
+.mathematician-header__degree, .mathematician-header__fields { color: #4f544f; font-family: var(--font-geist-sans), sans-serif; font-size: 0.84rem; }
+.mathematician-header__dissertation { max-width: 720px; color: var(--muted); font-size: 0.94rem; font-style: italic; line-height: 1.55; }
 .mathematician-header__fields { color: var(--accent); }
-.genealogy { border-top: 1px solid var(--line); padding-top: 19px; }
+.genealogy { border-top: 1px solid var(--line); padding-top: 18px; }
 .genealogy__heading { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }
 .genealogy h2 { margin: 0; font-family: var(--font-geist-sans), sans-serif; font-size: 0.88rem; font-weight: 600; }
-.genealogy__canvas { height: min(520px, 58vh); min-height: 370px; margin-top: 18px; border: 1px solid var(--line); background: #fdfdfb; }
-.react-flow__edge-path { stroke: #9a9d96; stroke-width: 1.2; }
+.genealogy__canvas { height: min(600px, 62vh); min-height: 400px; margin-top: 20px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #fdfdfb; }
+.react-flow__edge-path { stroke: #afb2aa; stroke-width: 1; }
 .react-flow__node { cursor: pointer; }
 .react-flow__handle { opacity: 0; }
-.genealogy-node { width: 218px; border: 1px solid #c9cbc4; border-radius: 2px; background: #fff; padding: 14px 15px; }
-.genealogy-node--subject { border-color: var(--accent); box-shadow: inset 3px 0 var(--accent); }
-.genealogy-node strong { display: block; font-size: 0.92rem; font-weight: 400; line-height: 1.25; }
-.genealogy-node span { display: block; margin-top: 5px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.68rem; line-height: 1.2; }
+.genealogy-node { width: 194px; border: 1px solid #d6d8d1; border-radius: 1px; background: #fff; padding: 10px 12px; transition: border-color 150ms ease, background-color 150ms ease; }
+.genealogy-node--subject { border-color: var(--accent); background: #f6f9f5; }
+.react-flow__node:hover .genealogy-node, .react-flow__node:focus .genealogy-node { border-color: var(--accent); }
+.genealogy-node strong { display: block; font-size: 0.85rem; font-weight: 400; line-height: 1.25; }
+.genealogy-node span { display: block; margin-top: 4px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.64rem; line-height: 1.2; }
 .data-sources { width: min(100%, 760px); margin: 0 auto; padding: 32px 30px 80px; }
 .data-sources article { padding-top: 82px; }
 .data-sources h1 { margin: 10px 0 30px; font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 400; line-height: 1.05; }
@@ -71,7 +72,7 @@ a { color: inherit; }
   .profile__search { align-items: flex-start; flex-direction: column; gap: 15px; }
   .search--compact { width: 100%; }
   .mathematician-header { padding: 51px 0 42px; }
-  .genealogy__canvas { height: 450px; margin-right: -18px; margin-left: -18px; border-right: 0; border-left: 0; }
+  .genealogy__canvas { height: 480px; margin-right: -18px; margin-left: -18px; }
   .data-sources { padding: 24px 18px 52px; }
   .data-sources article { padding-top: 54px; }
 }
