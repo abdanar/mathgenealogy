@@ -51,7 +51,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .header-search-toggle { display: grid; width: 24px; height: 24px; place-items: center; border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 0; }
 .header-search-toggle:hover, .header-search-toggle:focus-visible { color: var(--accent); }
 .header-search-toggle svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.75; }
-.mathematician-header { padding: 82px 0 28px; }
+.mathematician-header { padding: 82px 0 40px; }
 .mathematician-header h1 { margin: 0; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 400; letter-spacing: 0; line-height: 1.04; }
 .mathematician-header p { margin: 10px 0 0; }
 .mathematician-header h1, .mathematician-header__dissertation, .genealogy-list h3, .genealogy-list__institution, .genealogy-list__dissertation, .path-picker__results span, .path-picker__results small, .path-result strong, .path-result small { overflow-wrap: anywhere; }
@@ -65,7 +65,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .mathematician-header__dissertation p + p { margin-top: 4px; }
 .mathematician-header__fields { color: var(--accent); }
 .genealogy-list { width: min(100%, 800px); }
-.genealogy-list h2 { margin: 0 0 18px; border-bottom: 1px solid var(--line); padding-bottom: 12px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
+.genealogy-list h2 { margin: 0; border-bottom: 1px solid var(--line); padding-bottom: 12px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
 .genealogy-list__entries { margin: 0; padding: 0; list-style: none; }
 .genealogy-list__entry + .genealogy-list__entry { border-top: 1px solid var(--line); }
 .genealogy-list__link { display: grid; grid-template-columns: minmax(0, 1fr) 4ch; gap: 28px; padding: 20px 4px 21px 0; text-decoration: none; transition: color 150ms ease; }
