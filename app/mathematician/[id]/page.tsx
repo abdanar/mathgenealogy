@@ -9,7 +9,7 @@ export default async function MathematicianPage({
   params,
 }: PageProps<"/mathematician/[id]">) {
   const { id } = await params;
-  const genealogy = getLocalGenealogy(id);
+  const genealogy = await getLocalGenealogy(id);
 
   if (!genealogy) notFound();
 

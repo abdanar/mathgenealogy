@@ -2,6 +2,9 @@
 
 # dependencies
 /node_modules
+
+# Local-only curated Mathematics Genealogy Project database. Do not commit or expose it.
+/data/mg.db
 /.pnp
 .pnp.*
 .yarn/*

@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useRef, useState } from "react";
-import { searchMathematicians } from "@/lib/genealogy";
+import { useEffect, useId, useRef, useState } from "react";
+import { searchMathematiciansAction } from "@/app/actions/search";
 import type { Mathematician } from "@/types/genealogy";
 
 type SearchBarProps = {
@@ -16,17 +16,32 @@ export function SearchBar({ autoFocus = false, compact = false }: SearchBarProps
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
-  const results = searchMathematicians(query);
+  const [results, setResults] = useState<Mathematician[]>([]);
   const isOpen = query.trim().length > 0;
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let isCurrent = true;
+    void searchMathematiciansAction(query).then((matches) => {
+      if (isCurrent) setResults(matches);
+    });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [isOpen, query]);
 
   function selectMathematician(mathematician: Mathematician) {
     setQuery("");
+    setResults([]);
     router.push(`/mathematician/${mathematician.id}`);
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Escape") {
       setQuery("");
+      setResults([]);
       inputRef.current?.blur();
       return;
     }
@@ -55,7 +70,7 @@ export function SearchBar({ autoFocus = false, compact = false }: SearchBarProps
   return (
     <div className={`search ${compact ? "search--compact" : ""}`}>
       <label className="sr-only" htmlFor={inputId}>Search mathematicians</label>
-      <input ref={inputRef} id={inputId} autoComplete="off" autoFocus={autoFocus} className="search__input" type="search" role="combobox" placeholder="Search a mathematician..." value={query} onChange={(event) => { setQuery(event.target.value); setActiveIndex(-1); }} onKeyDown={handleKeyDown} aria-autocomplete="list" aria-controls={isOpen ? `${inputId}-results` : undefined} aria-expanded={isOpen} aria-activedescendant={activeIndex >= 0 ? `${inputId}-option-${activeIndex}` : undefined} />
+      <input ref={inputRef} id={inputId} autoComplete="off" autoFocus={autoFocus} className="search__input" type="search" role="combobox" placeholder="Search a mathematician..." value={query} onChange={(event) => { setQuery(event.target.value); setResults([]); setActiveIndex(-1); }} onKeyDown={handleKeyDown} aria-autocomplete="list" aria-controls={isOpen ? `${inputId}-results` : undefined} aria-expanded={isOpen} aria-activedescendant={activeIndex >= 0 ? `${inputId}-option-${activeIndex}` : undefined} />
       {isOpen && (
         <div className="search__results" id={`${inputId}-results`} role="listbox">
           {results.length > 0 ? results.map((mathematician, index) => (

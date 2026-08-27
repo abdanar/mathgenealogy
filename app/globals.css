@@ -11,26 +11,12 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   margin: 0; background: var(--paper); color: var(--ink); font-family: Georgia, "Times New Roman", serif;
-@media (max-width: 640px) {
-  .profile { padding: 18px 18px 30px; }
-  .profile__search { align-items: flex-start; flex-direction: column; gap: 15px; }
-  .search--compact { width: 100%; }
-  .mathematician-header { padding: 51px 0 42px; }
-  .genealogy__canvas { height: 450px; margin-right: -18px; margin-left: -18px; border-right: 0; border-left: 0; }
 }
+
 * { box-sizing: border-box; }
 button, input { font: inherit; }
 a { color: inherit; }
@@ -72,4 +58,19 @@ a { color: inherit; }
 .genealogy-node--subject { border-color: var(--accent); box-shadow: inset 3px 0 var(--accent); }
 .genealogy-node strong { display: block; font-size: 0.92rem; font-weight: 400; line-height: 1.25; }
 .genealogy-node span { display: block; margin-top: 5px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.68rem; line-height: 1.2; }
+.data-sources { width: min(100%, 760px); margin: 0 auto; padding: 32px 30px 80px; }
+.data-sources article { padding-top: 82px; }
+.data-sources h1 { margin: 10px 0 30px; font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 400; line-height: 1.05; }
+.data-sources h2 { margin: 44px 0 12px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.9rem; font-weight: 600; }
+.data-sources p { max-width: 650px; color: #4f544f; font-size: 1.05rem; line-height: 1.65; }
+.data-sources code { font-family: var(--font-geist-mono), monospace; font-size: 0.84em; }
+
+@media (max-width: 640px) {
+  .profile { padding: 18px 18px 30px; }
+  .profile__search { align-items: flex-start; flex-direction: column; gap: 15px; }
+  .search--compact { width: 100%; }
+  .mathematician-header { padding: 51px 0 42px; }
+  .genealogy__canvas { height: 450px; margin-right: -18px; margin-left: -18px; border-right: 0; border-left: 0; }
+  .data-sources { padding: 24px 18px 52px; }
+  .data-sources article { padding-top: 54px; }
 }
