@@ -3,7 +3,7 @@ import "server-only";
 import { join } from "node:path";
 import Database from "better-sqlite3";
 import type { GenealogyRepository } from "@/lib/data/repository";
-import type { Mathematician } from "@/types/genealogy";
+import type { GenealogyPath, Mathematician } from "@/types/genealogy";
 
 type PersonRow = {
   id: number;
@@ -17,6 +17,8 @@ type PersonRow = {
 };
 
 const database = new Database(join(process.cwd(), "data", "mg.db"), { readonly: true });
+const maximumPathExpansions = 100_000;
+let studentIdsByAdvisor: Map<string, string[]> | undefined;
 
 const personSelect = `
   SELECT
@@ -59,6 +61,25 @@ function toMathematician(row: PersonRow): Mathematician {
 
 function getPeople(sql: string, ...parameters: unknown[]): Mathematician[] {
   return (database.prepare(sql).all(...parameters) as PersonRow[]).map(toMathematician);
+}
+
+function getStudentIdsByAdvisor(): Map<string, string[]> {
+  if (studentIdsByAdvisor) return studentIdsByAdvisor;
+
+  const relationships = database.prepare("SELECT ADVISOR AS advisorId, STUDENT AS studentId FROM STUDENTS").all() as {
+    advisorId: number;
+    studentId: number;
+  }[];
+
+  studentIdsByAdvisor = new Map();
+  for (const relationship of relationships) {
+    const advisorId = String(relationship.advisorId);
+    const students = studentIdsByAdvisor.get(advisorId) ?? [];
+    students.push(String(relationship.studentId));
+    studentIdsByAdvisor.set(advisorId, students);
+  }
+
+  return studentIdsByAdvisor;
 }
 
 function normalizedSearchQuery(query: string): string {
@@ -118,10 +139,45 @@ async function getLocalGenealogy(id: string) {
   };
 }
 
+async function findDescendantPath(sourceId: string, targetId: string): Promise<GenealogyPath | undefined> {
+  const [source, target] = await Promise.all([getMathematician(sourceId), getMathematician(targetId)]);
+  if (!source || !target) return undefined;
+  if (sourceId === targetId) return { mathematicians: [source], generations: 0 };
+
+  const predecessors = new Map<string, string | undefined>([[sourceId, undefined]]);
+  const queue = [sourceId];
+  const studentIds = getStudentIdsByAdvisor();
+  let expansions = 0;
+
+  for (let index = 0; index < queue.length && expansions < maximumPathExpansions; index += 1) {
+    const advisorId = queue[index];
+    for (const studentId of studentIds.get(advisorId) ?? []) {
+      if (predecessors.has(studentId)) continue;
+      predecessors.set(studentId, advisorId);
+      if (studentId === targetId) {
+        const pathIds: string[] = [];
+        let currentId: string | undefined = targetId;
+        while (currentId) {
+          pathIds.unshift(currentId);
+          currentId = predecessors.get(currentId);
+        }
+        const mathematicians = await Promise.all(pathIds.map(getMathematician));
+        if (mathematicians.some((mathematician) => !mathematician)) return undefined;
+        return { mathematicians: mathematicians as Mathematician[], generations: pathIds.length - 1 };
+      }
+      queue.push(studentId);
+      expansions += 1;
+    }
+  }
+
+  return undefined;
+}
+
 export const sqliteGenealogyRepository: GenealogyRepository = {
   getMathematician,
   searchMathematicians,
   getAdvisors,
   getStudents,
   getLocalGenealogy,
+  findDescendantPath,
 };

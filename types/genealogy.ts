@@ -20,3 +20,8 @@ export type LocalGenealogy = {
   students: Mathematician[];
   relationships: AcademicRelationship[];
 };
+
+export type GenealogyPath = {
+  mathematicians: Mathematician[];
+  generations: number;
+};

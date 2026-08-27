@@ -23,6 +23,7 @@ a { color: inherit; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .home { display: grid; min-height: 100vh; place-items: center; padding: 32px 24px 14vh; }
 .home__search { width: min(100%, 640px); }
+.home__path { display: inline-block; margin-top: 14px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; text-decoration-color: #babcb5; text-underline-offset: 3px; }
 .eyebrow, .genealogy__heading p { margin: 0; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
 .home h1 { margin: 10px 0 32px; font-size: clamp(2.8rem, 8vw, 4.8rem); font-weight: 400; line-height: 1; }
 .search { position: relative; width: 100%; }
@@ -40,6 +41,8 @@ a { color: inherit; }
 .search__empty { margin: 0; padding: 15px 16px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.85rem; }
 .profile { width: min(100%, 1240px); margin: 0 auto; padding: 26px 42px 56px; }
 .profile__search { display: flex; align-items: center; justify-content: space-between; gap: 32px; border-bottom: 1px solid var(--line); padding-bottom: 21px; }
+.profile__tools { display: flex; align-items: center; gap: 16px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; }
+.profile__tools > a { color: var(--muted); text-decoration-color: #babcb5; text-underline-offset: 3px; }
 .wordmark { text-decoration: none; font-size: 1.2rem; }
 .mathematician-header { padding: 82px 0 62px; }
 .mathematician-header h1 { margin: 0; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 400; letter-spacing: 0; line-height: 1.04; }
@@ -84,10 +87,39 @@ a { color: inherit; }
 .data-sources h2 { margin: 44px 0 12px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.9rem; font-weight: 600; }
 .data-sources p { max-width: 650px; color: #4f544f; font-size: 1.05rem; line-height: 1.65; }
 .data-sources code { font-family: var(--font-geist-mono), monospace; font-size: 0.84em; }
+.path-page { width: min(100%, 880px); margin: 0 auto; padding: 26px 42px 80px; }
+.path-page__header { padding: 76px 0 38px; }
+.path-page__header h1 { margin: 10px 0 0; font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 400; line-height: 1.05; }
+.path-form { display: grid; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 18px; }
+.path-picker { position: relative; }
+.path-picker label { display: block; margin-bottom: 8px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
+.path-picker input { width: 100%; border: 1px solid #b9bcb4; border-radius: 2px; background: #fff; color: var(--ink); padding: 12px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.88rem; outline: none; }
+.path-picker input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgb(56 93 82 / 12%); }
+.path-picker__results { position: absolute; z-index: 2; top: calc(100% + 5px); width: 100%; overflow: hidden; border: 1px solid var(--line); background: #fff; box-shadow: 0 10px 28px rgb(31 37 33 / 10%); }
+.path-picker__results button { display: grid; width: 100%; border: 0; border-bottom: 1px solid #edede8; background: transparent; padding: 10px 12px; color: var(--ink); cursor: pointer; text-align: left; }
+.path-picker__results button:hover { background: #f2f5f1; }
+.path-picker__results span { font-size: 0.86rem; }
+.path-picker__results small, .path-picker__results p { margin: 3px 0 0; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.68rem; }
+.path-picker__results p { padding: 11px 12px; }
+.path-form > button { min-height: 42px; border: 1px solid var(--ink); border-radius: 2px; background: var(--ink); padding: 0 16px; color: #fff; cursor: pointer; font-family: var(--font-geist-sans), sans-serif; font-size: 0.8rem; }
+.path-form > button:disabled { cursor: not-allowed; opacity: 0.45; }
+.path-result { width: min(100%, 610px); margin-top: 66px; border-top: 1px solid var(--line); padding-top: 22px; }
+.path-result h2 { margin: 0 0 24px; font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
+.path-result ol { margin: 0; padding: 0; list-style: none; }
+.path-result li { display: grid; }
+.path-result li > a { padding: 0; text-decoration: none; }
+.path-result strong { display: block; font-size: 1.15rem; font-weight: 400; }
+.path-result a:hover strong, .path-result a:focus-visible strong { color: var(--accent); }
+.path-result small { display: block; margin-top: 5px; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.78rem; }
+.path-result__connector { width: 1px; height: 30px; margin: 13px 0 13px 7px; background: #b7bab2; }
+.path-result__connector::after { display: block; padding-top: 23px; color: #999d94; content: "↓"; font-family: var(--font-geist-sans), sans-serif; font-size: 0.82rem; transform: translateX(-4px); }
+.path-result > p, .path-empty { margin: 28px 0 0; color: var(--muted); font-family: var(--font-geist-sans), sans-serif; font-size: 0.8rem; }
+.path-empty { border-top: 1px solid var(--line); padding-top: 22px; }
 
 @media (max-width: 640px) {
   .profile { padding: 18px 18px 30px; }
   .profile__search { align-items: flex-start; flex-direction: column; gap: 15px; }
+  .profile__tools { width: 100%; justify-content: space-between; }
   .search--compact { width: 100%; }
   .mathematician-header { padding: 51px 0 42px; }
   .genealogy-list__link { grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 18px 0 19px; }
@@ -96,4 +128,8 @@ a { color: inherit; }
   .genealogy__canvas { height: 480px; margin-right: -18px; margin-left: -18px; }
   .data-sources { padding: 24px 18px 52px; }
   .data-sources article { padding-top: 54px; }
+  .path-page { padding: 18px 18px 52px; }
+  .path-page__header { padding: 54px 0 32px; }
+  .path-form { grid-template-columns: 1fr; gap: 16px; }
+  .path-form > button { width: fit-content; padding: 0 18px; }
 }

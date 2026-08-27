@@ -17,7 +17,7 @@ export default async function MathematicianPage({
     <main className="profile">
       <div className="profile__search">
         <Link className="wordmark" href="/">MathGenealogy</Link>
-        <SearchBar compact />
+        <div className="profile__tools"><SearchBar compact /><Link href="/path">Path</Link></div>
       </div>
       <MathematicianHeader mathematician={genealogy.subject} advisors={genealogy.advisors} />
       <GenealogyList students={genealogy.students} />

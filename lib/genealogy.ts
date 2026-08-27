@@ -8,4 +8,5 @@ export const {
   getAdvisors,
   getStudents,
   getLocalGenealogy,
+  findDescendantPath,
 } = sqliteGenealogyRepository;
