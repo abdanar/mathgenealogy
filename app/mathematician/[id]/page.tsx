@@ -1,4 +1,4 @@
-import { GenealogyGraph } from "@/components/GenealogyGraph";
+import { GenealogyList } from "@/components/GenealogyList";
 import { MathematicianHeader } from "@/components/MathematicianHeader";
 import { SearchBar } from "@/components/SearchBar";
 import { getLocalGenealogy } from "@/lib/genealogy";
@@ -19,8 +19,8 @@ export default async function MathematicianPage({
         <Link className="wordmark" href="/">MathGenealogy</Link>
         <SearchBar compact />
       </div>
-      <MathematicianHeader mathematician={genealogy.subject} />
-      <GenealogyGraph genealogy={genealogy} />
+      <MathematicianHeader mathematician={genealogy.subject} advisors={genealogy.advisors} />
+      <GenealogyList students={genealogy.students} />
     </main>
   );
 }
