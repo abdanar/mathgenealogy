@@ -13,7 +13,7 @@ function PersonEntry({ mathematician }: { mathematician: Mathematician }) {
           )}
         </div>
         {mathematician.degreeYear && (
-          <span className="genealogy-list__year" aria-hidden="true">
+          <span className="genealogy-list__year">
             {mathematician.degreeYear}
           </span>
         )}
