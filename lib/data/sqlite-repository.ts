@@ -19,6 +19,7 @@ type PersonRow = {
 const database = new Database(join(process.cwd(), "data", "mg.db"), { readonly: true });
 const maximumPathExpansions = 100_000;
 const autocompleteSearchLimit = 12;
+const searchCandidateLimit = 1_000;
 const searchResultsPageSize = 20;
 let studentIdsByAdvisor: Map<string, string[]> | undefined;
 
@@ -85,7 +86,69 @@ function getStudentIdsByAdvisor(): Map<string, string[]> {
 }
 
 function normalizedSearchQuery(query: string): string {
-  return query.trim().toLocaleLowerCase().replaceAll("\u00df", "ss");
+  return query.normalize("NFKD").replace(/\p{Diacritic}/gu, "").trim().replace(/\s+/g, " ").toLocaleLowerCase().replaceAll("\u00df", "ss");
+}
+
+function matchRank(name: string, query: string): number | undefined {
+  const normalizedName = normalizedSearchQuery(name);
+  const nameParts = normalizedName.split(" ");
+
+  if (normalizedName === query) return 0;
+  if (normalizedName.startsWith(query)) return 1;
+  if (nameParts.some((part) => part.startsWith(query))) return 2;
+  if (query.length >= 3 && normalizedName.includes(query)) return 3;
+  if (query.length >= 3 && nameParts.some((part) => levenshteinDistance(part, query) <= 1)) return 4;
+}
+
+function levenshteinDistance(first: string, second: string): number {
+  if (Math.abs(first.length - second.length) > 1) return 2;
+
+  let previous = Array.from({ length: second.length + 1 }, (_, index) => index);
+  for (let firstIndex = 1; firstIndex <= first.length; firstIndex += 1) {
+    const current = [firstIndex];
+    for (let secondIndex = 1; secondIndex <= second.length; secondIndex += 1) {
+      current[secondIndex] = Math.min(
+        current[secondIndex - 1] + 1,
+        previous[secondIndex] + 1,
+        previous[secondIndex - 1] + Number(first[firstIndex - 1] !== second[secondIndex - 1]),
+      );
+    }
+    previous = current;
+  }
+  return previous[second.length];
+}
+
+async function rankedSearchMathematicians(query: string): Promise<Mathematician[]> {
+  const normalizedQuery = normalizedSearchQuery(query);
+  if (normalizedQuery.length < 2) return [];
+
+  const nameExpression = "lower(trim(p.FNAME || ' ' || coalesce(p.ONAME, '') || ' ' || p.LNAME))";
+  const componentPrefix = `${normalizedQuery}%`;
+  const fuzzyPrefix = `${normalizedQuery.slice(0, 2)}%`;
+  const parameters = normalizedQuery.length === 2
+    ? [componentPrefix, componentPrefix, componentPrefix, componentPrefix, searchCandidateLimit]
+    : [
+      `%${normalizedQuery}%`, componentPrefix, componentPrefix, componentPrefix, fuzzyPrefix, fuzzyPrefix, fuzzyPrefix,
+      `%${normalizedQuery}%`, componentPrefix, componentPrefix, componentPrefix, `%${normalizedQuery}%`, searchCandidateLimit,
+    ];
+  const predicate = normalizedQuery.length === 2
+    ? `(${nameExpression} LIKE ? OR lower(p.FNAME) LIKE ? OR lower(coalesce(p.ONAME, '')) LIKE ? OR lower(p.LNAME) LIKE ?)`
+    : `(${nameExpression} LIKE ? OR lower(p.FNAME) LIKE ? OR lower(coalesce(p.ONAME, '')) LIKE ? OR lower(p.LNAME) LIKE ? OR lower(p.FNAME) LIKE ? OR lower(coalesce(p.ONAME, '')) LIKE ? OR lower(p.LNAME) LIKE ?)`;
+  const candidateOrder = normalizedQuery.length === 2
+    ? "p.LNAME, p.FNAME, p.ONAME"
+    : `CASE
+         WHEN ${nameExpression} LIKE ? THEN 0
+         WHEN lower(p.FNAME) LIKE ? OR lower(coalesce(p.ONAME, '')) LIKE ? OR lower(p.LNAME) LIKE ? THEN 1
+         WHEN ${nameExpression} LIKE ? THEN 2
+         ELSE 3
+       END, p.LNAME, p.FNAME, p.ONAME`;
+  const candidates = getPeople(`${personSelect} WHERE ${predicate} ORDER BY ${candidateOrder} LIMIT ?`, ...parameters);
+
+  return candidates
+    .map((mathematician) => ({ mathematician, rank: matchRank(mathematician.name, normalizedQuery) }))
+    .filter((candidate): candidate is { mathematician: Mathematician; rank: number } => candidate.rank !== undefined)
+    .sort((first, second) => first.rank - second.rank || first.mathematician.name.localeCompare(second.mathematician.name))
+    .map(({ mathematician }) => mathematician);
 }
 
 async function getMathematician(id: string) {
@@ -93,46 +156,17 @@ async function getMathematician(id: string) {
   return row ? toMathematician(row) : undefined;
 }
 
-async function searchMathematiciansWithLimit(query: string, limit: number) {
-  const normalizedQuery = normalizedSearchQuery(query);
-  if (!normalizedQuery) return [];
-
-  return getPeople(
-    `${personSelect}
-     WHERE replace(lower(trim(p.FNAME || ' ' || coalesce(p.ONAME, '') || ' ' || p.LNAME)), char(223), 'ss') LIKE ?
-       ORDER BY CASE WHEN replace(lower(p.LNAME), char(223), 'ss') = ? THEN 0 ELSE 1 END, p.FNAME, p.ONAME, p.LNAME
-     LIMIT ?`,
-    `%${normalizedQuery}%`,
-    normalizedQuery,
-    limit,
-  );
-}
-
 async function searchMathematicians(query: string) {
-  return searchMathematiciansWithLimit(query, autocompleteSearchLimit);
+  return (await rankedSearchMathematicians(query)).slice(0, autocompleteSearchLimit);
 }
 
 async function searchMathematiciansForResults(query: string, requestedPage: number): Promise<PaginatedMathematicians> {
-  const normalizedQuery = normalizedSearchQuery(query);
-  if (!normalizedQuery) return { mathematicians: [], page: 1, total: 0, totalPages: 0 };
-
-  const searchPattern = `%${normalizedQuery}%`;
-  const predicate = "replace(lower(trim(p.FNAME || ' ' || coalesce(p.ONAME, '') || ' ' || p.LNAME)), char(223), 'ss') LIKE ?";
-  const total = (database.prepare(`SELECT COUNT(*) AS total FROM PERSONS p WHERE ${predicate}`).get(searchPattern) as { total: number }).total;
+  const mathematicians = await rankedSearchMathematicians(query);
+  const total = mathematicians.length;
   const totalPages = Math.ceil(total / searchResultsPageSize);
   const page = totalPages ? Math.min(Math.max(1, requestedPage), totalPages) : 1;
-  const mathematicians = getPeople(
-    `${personSelect}
-     WHERE ${predicate}
-     ORDER BY CASE WHEN replace(lower(p.LNAME), char(223), 'ss') = ? THEN 0 ELSE 1 END, p.FNAME, p.ONAME, p.LNAME
-     LIMIT ? OFFSET ?`,
-    searchPattern,
-    normalizedQuery,
-    searchResultsPageSize,
-    (page - 1) * searchResultsPageSize,
-  );
 
-  return { mathematicians, page, total, totalPages };
+  return { mathematicians: mathematicians.slice((page - 1) * searchResultsPageSize, page * searchResultsPageSize), page, total, totalPages };
 }
 
 async function getAdvisors(id: string) {

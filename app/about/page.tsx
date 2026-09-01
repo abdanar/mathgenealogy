@@ -7,7 +7,7 @@ export const metadata = {
 export default function DataSourcesPage() {
   return (
     <main className="data-sources">
-      <Link className="wordmark" href="/">MathGenealogy</Link>
+      <Link className="wordmark" href="/">Math<span style={{ color: "var(--accent)" }}>Genealogy</span></Link>
       <article>
         <p className="eyebrow">Data sources</p>
         <h1>Mathematics Genealogy Project data</h1>

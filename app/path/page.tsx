@@ -8,14 +8,13 @@ export default function PathPage() {
   return (
     <main className="path-page">
       <div className="profile__search">
-        <Link className="wordmark" href="/">MathGenealogy</Link>
+        <Link className="wordmark" href="/">Math<span style={{ color: "var(--accent)" }}>Genealogy</span></Link>
         <div className="profile__tools">
           <Link aria-current="page" href="/path">Path</Link>
           <HeaderSearch />
         </div>
       </div>
       <header className="path-page__header">
-        <p className="eyebrow">Academic genealogy</p>
         <h1>Find a relationship</h1>
       </header>
       <PathFinder />

@@ -5,10 +5,9 @@ export default function Home() {
   return (
     <main className="home">
       <div className="home__search">
-        <p className="eyebrow">Academic genealogy of mathematics</p>
-        <h1>MathGenealogy</h1>
-        <SearchBar autoFocus />
-        <Link className="home__path" href="/path">Find a genealogy path <span aria-hidden="true">→</span></Link>
+        <h1>Math<span style={{ color: "var(--accent)" }}>Genealogy</span></h1>
+        <SearchBar autoFocus home />
+        <Link className="home__path" href="/path">Find a genealogy path</Link>
       </div>
     </main>
   );

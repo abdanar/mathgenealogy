@@ -10,24 +10,32 @@ import type { GenealogyPath, Mathematician } from "@/types/genealogy";
 
 type PickerProps = {
   label: string;
+  placeholder: string;
   onSelect: (mathematician: Mathematician) => void;
   onClear: () => void;
 };
 
-function MathematicianPicker({ label, onSelect, onClear }: PickerProps) {
+function MathematicianPicker({ label, placeholder, onSelect, onClear }: PickerProps) {
   const inputId = useId();
   const [query, setQuery] = useState("");
   const [matches, setMatches] = useState<Mathematician[]>([]);
   const [hasSelection, setHasSelection] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const displayedMatches = matches.slice(0, 6);
+  const hasMoreMatches = matches.length > displayedMatches.length;
 
   useEffect(() => {
-    if (!query.trim() || hasSelection) return;
+    if (query.trim().length < 2 || hasSelection) {
+      setMatches([]);
+      return;
+    }
     let isCurrent = true;
-    void searchMathematiciansAction(query).then((results) => {
-      if (isCurrent) setMatches(results);
-    });
-    return () => { isCurrent = false; };
+    const timeout = window.setTimeout(() => {
+      void searchMathematiciansAction(query).then((results) => {
+        if (isCurrent) setMatches(results);
+      });
+    }, 225);
+    return () => { isCurrent = false; window.clearTimeout(timeout); };
   }, [hasSelection, query]);
 
   function selectMathematician(mathematician: Mathematician) {
@@ -46,20 +54,20 @@ function MathematicianPicker({ label, onSelect, onClear }: PickerProps) {
       return;
     }
 
-    if (!matches.length) return;
+    if (!displayedMatches.length) return;
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActiveIndex((index) => (index + 1) % matches.length);
+      setActiveIndex((index) => (index + 1) % displayedMatches.length);
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveIndex((index) => (index <= 0 ? matches.length - 1 : index - 1));
+      setActiveIndex((index) => (index <= 0 ? displayedMatches.length - 1 : index - 1));
     }
 
     if (event.key === "Enter") {
-      const mathematician = matches[activeIndex] ?? matches[0];
+      const mathematician = displayedMatches[activeIndex] ?? displayedMatches[0];
       if (mathematician) {
         event.preventDefault();
         selectMathematician(mathematician);
@@ -70,23 +78,24 @@ function MathematicianPicker({ label, onSelect, onClear }: PickerProps) {
   return (
     <div className="path-picker">
       <label htmlFor={inputId}>{label}</label>
+      <svg className="path-picker__icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" /><path d="m16 16 4 4" /></svg>
       <input
         id={inputId}
         type="search"
         role="combobox"
         autoComplete="off"
         value={query}
-        placeholder="Search a mathematician"
+        placeholder={placeholder}
         onChange={(event) => { setQuery(event.target.value); setMatches([]); setHasSelection(false); setActiveIndex(-1); onClear(); }}
         onKeyDown={handleKeyDown}
         aria-autocomplete="list"
-        aria-controls={query.trim() && !hasSelection ? `${inputId}-results` : undefined}
-        aria-expanded={query.trim().length > 0 && !hasSelection}
+        aria-controls={query.trim().length >= 2 && !hasSelection ? `${inputId}-results` : undefined}
+        aria-expanded={query.trim().length >= 2 && !hasSelection}
         aria-activedescendant={activeIndex >= 0 ? `${inputId}-option-${activeIndex}` : undefined}
       />
-      {query.trim() && !hasSelection && (
+      {query.trim().length >= 2 && !hasSelection && (
         <div className="path-picker__results" id={`${inputId}-results`} role="listbox">
-          {matches.map((mathematician, index) => (
+          {displayedMatches.map((mathematician, index) => (
             <button
               id={`${inputId}-option-${index}`}
               key={mathematician.id}
@@ -102,6 +111,7 @@ function MathematicianPicker({ label, onSelect, onClear }: PickerProps) {
               )}
             </button>
           ))}
+          {hasMoreMatches && <Link className="path-picker__all-results" href={`/search?q=${encodeURIComponent(query.trim())}`}>View all results →</Link>}
           {matches.length === 0 && <p>No mathematicians found.</p>}
         </div>
       )}
@@ -150,8 +160,9 @@ export function PathFinder() {
   return (
     <>
       <form className="path-form" onSubmit={findPath}>
-        <MathematicianPicker label="From" onSelect={(mathematician) => { setSource(mathematician); setHasSearched(false); }} onClear={() => setSource(undefined)} />
-        <MathematicianPicker label="To" onSelect={(mathematician) => { setTarget(mathematician); setHasSearched(false); }} onClear={() => setTarget(undefined)} />
+        <MathematicianPicker label="From" placeholder="Search first mathematician" onSelect={(mathematician) => { setSource(mathematician); setHasSearched(false); }} onClear={() => setSource(undefined)} />
+        <span className="path-form__connector" aria-hidden="true">→</span>
+        <MathematicianPicker label="To" placeholder="Search second mathematician" onSelect={(mathematician) => { setTarget(mathematician); setHasSearched(false); }} onClear={() => setTarget(undefined)} />
         <button type="submit" disabled={!source || !target || isPending}>
           {isPending ? "Finding relationship..." : "Find relationship"}
         </button>

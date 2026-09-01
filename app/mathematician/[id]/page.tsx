@@ -16,7 +16,7 @@ export default async function MathematicianPage({
   return (
     <main className="profile">
       <div className="profile__search">
-        <Link className="wordmark" href="/">MathGenealogy</Link>
+        <Link className="wordmark" href="/">Math<span style={{ color: "var(--accent)" }}>Genealogy</span></Link>
         <div className="profile__tools">
           <Link href="/path">Path</Link>
           <HeaderSearch />
