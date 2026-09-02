@@ -92,10 +92,12 @@ function normalizedSearchQuery(query: string): string {
 function matchRank(name: string, query: string): number | undefined {
   const normalizedName = normalizedSearchQuery(name);
   const nameParts = normalizedName.split(" ");
+  const queryParts = query.split(" ");
 
   if (normalizedName === query) return 0;
   if (normalizedName.startsWith(query)) return 1;
   if (nameParts.some((part) => part.startsWith(query))) return 2;
+  if (queryParts.length > 1 && queryParts.every((part, index) => nameParts.slice(index).some((namePart) => namePart.startsWith(part)))) return 2;
   if (query.length >= 3 && normalizedName.includes(query)) return 3;
   if (query.length >= 3 && nameParts.some((part) => levenshteinDistance(part, query) <= 1)) return 4;
 }
@@ -122,25 +124,31 @@ async function rankedSearchMathematicians(query: string): Promise<Mathematician[
   const normalizedQuery = normalizedSearchQuery(query);
   if (normalizedQuery.length < 2) return [];
 
-  const nameExpression = "lower(trim(p.FNAME || ' ' || coalesce(p.ONAME, '') || ' ' || p.LNAME))";
+  const nameExpression = "replace(lower(trim(p.FNAME || ' ' || coalesce(p.ONAME, '') || ' ' || p.LNAME)), char(223), 'ss')";
+  const firstNameExpression = "replace(lower(p.FNAME), char(223), 'ss')";
+  const otherNameExpression = "replace(lower(coalesce(p.ONAME, '')), char(223), 'ss')";
+  const lastNameExpression = "replace(lower(p.LNAME), char(223), 'ss')";
+  const queryParts = normalizedQuery.split(" ");
+  const nameContainsQueryParts = queryParts.map(() => `${nameExpression} LIKE ?`).join(" AND ");
   const componentPrefix = `${normalizedQuery}%`;
   const fuzzyPrefix = `${normalizedQuery.slice(0, 2)}%`;
   const parameters = normalizedQuery.length === 2
     ? [componentPrefix, componentPrefix, componentPrefix, componentPrefix, searchCandidateLimit]
     : [
-      `%${normalizedQuery}%`, componentPrefix, componentPrefix, componentPrefix, fuzzyPrefix, fuzzyPrefix, fuzzyPrefix,
-      `%${normalizedQuery}%`, componentPrefix, componentPrefix, componentPrefix, `%${normalizedQuery}%`, searchCandidateLimit,
+      ...queryParts.map((part) => `%${part}%`), componentPrefix, componentPrefix, componentPrefix, fuzzyPrefix, fuzzyPrefix, fuzzyPrefix,
+      ...queryParts.map((part) => `%${part}%`), `%${normalizedQuery}%`, componentPrefix, componentPrefix, componentPrefix, `%${normalizedQuery}%`, searchCandidateLimit,
     ];
   const predicate = normalizedQuery.length === 2
-    ? `(${nameExpression} LIKE ? OR lower(p.FNAME) LIKE ? OR lower(coalesce(p.ONAME, '')) LIKE ? OR lower(p.LNAME) LIKE ?)`
-    : `(${nameExpression} LIKE ? OR lower(p.FNAME) LIKE ? OR lower(coalesce(p.ONAME, '')) LIKE ? OR lower(p.LNAME) LIKE ? OR lower(p.FNAME) LIKE ? OR lower(coalesce(p.ONAME, '')) LIKE ? OR lower(p.LNAME) LIKE ?)`;
+    ? `(${nameExpression} LIKE ? OR ${firstNameExpression} LIKE ? OR ${otherNameExpression} LIKE ? OR ${lastNameExpression} LIKE ?)`
+    : `(${nameContainsQueryParts} OR ${firstNameExpression} LIKE ? OR ${otherNameExpression} LIKE ? OR ${lastNameExpression} LIKE ? OR ${firstNameExpression} LIKE ? OR ${otherNameExpression} LIKE ? OR ${lastNameExpression} LIKE ?)`;
   const candidateOrder = normalizedQuery.length === 2
     ? "p.LNAME, p.FNAME, p.ONAME"
     : `CASE
          WHEN ${nameExpression} LIKE ? THEN 0
-         WHEN lower(p.FNAME) LIKE ? OR lower(coalesce(p.ONAME, '')) LIKE ? OR lower(p.LNAME) LIKE ? THEN 1
-         WHEN ${nameExpression} LIKE ? THEN 2
-         ELSE 3
+          WHEN ${nameContainsQueryParts} THEN 1
+          WHEN ${firstNameExpression} LIKE ? OR ${otherNameExpression} LIKE ? OR ${lastNameExpression} LIKE ? THEN 2
+          WHEN ${nameExpression} LIKE ? THEN 3
+          ELSE 4
        END, p.LNAME, p.FNAME, p.ONAME`;
   const candidates = getPeople(`${personSelect} WHERE ${predicate} ORDER BY ${candidateOrder} LIMIT ?`, ...parameters);
 

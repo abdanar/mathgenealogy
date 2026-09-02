@@ -3,8 +3,16 @@
 # dependencies
 /node_modules
 
-# Local-only curated Mathematics Genealogy Project database. Do not commit or expose it.
-/data/mg.db
+# Local-only curated Mathematics Genealogy Project databases. Do not commit or expose them.
+/data/*.db
+/data/*.db-shm
+/data/*.db-wal
+/data/*.sqlite
+/data/*.sqlite-shm
+/data/*.sqlite-wal
+/data/*.sqlite3
+/data/*.sqlite3-shm
+/data/*.sqlite3-wal
 /.pnp
 .pnp.*
 .yarn/*
