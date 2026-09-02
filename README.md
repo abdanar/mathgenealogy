@@ -14,7 +14,7 @@ MathGenealogy is a modern, search-first interface for exploring mathematical aca
 
 ## Development transparency
 
-> **Development transparency.** This project is an experiment in AI-assisted software development. I defined the project idea, requirements, design direction, testing criteria, and reviewed the results, while the implementation was generated and modified using OpenAI Codex. I did not manually write the source code in this repository.
+This project is an experiment in AI-assisted software development. I defined the project idea, requirements, design direction, testing criteria, and reviewed the results, while the implementation was generated and modified using OpenAI Codex. I did not manually write the source code in this repository.
 
 ## Data
 
