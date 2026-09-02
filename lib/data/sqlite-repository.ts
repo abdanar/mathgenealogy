@@ -1,5 +1,3 @@
-import "server-only";
-
 import { join } from "node:path";
 import Database from "better-sqlite3";
 import type { GenealogyRepository, PaginatedMathematicians } from "@/lib/data/repository";
@@ -16,7 +14,7 @@ type PersonRow = {
   fields: string | null;
 };
 
-const database = new Database(join(process.cwd(), "data", "mg.db"), { readonly: true });
+const database = new Database(process.env.MATHGENEALOGY_DB_PATH ?? join(process.cwd(), "data", "mg.db"), { readonly: true });
 const maximumPathExpansions = 100_000;
 const autocompleteSearchLimit = 12;
 const searchCandidateLimit = 1_000;

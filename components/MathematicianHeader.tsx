@@ -20,7 +20,7 @@ export function MathematicianHeader({
           {advisors.map((advisor, index) => (
             <span key={advisor.id}>
               {index > 0 && " · "}
-              <Link href={`/mathematician/${advisor.id}`}>{advisor.name}</Link>
+              <Link href={`/mathematician?id=${encodeURIComponent(advisor.id)}`}>{advisor.name}</Link>
             </span>
           ))}
         </p>

@@ -132,7 +132,7 @@ export function GenealogyGraph({ genealogy }: { genealogy: LocalGenealogy }) {
         <p>{genealogy.advisors.length} advisor{genealogy.advisors.length === 1 ? "" : "s"} · {genealogy.students.length} immediate student{genealogy.students.length === 1 ? "" : "s"}</p>
       </div>
       <div className="genealogy__canvas">
-        <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.18, minZoom: 0.68, maxZoom: 1 }} minZoom={0.6} maxZoom={1.25} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false} onNodeClick={(_, node) => router.push(`/mathematician/${node.id}`)}>
+        <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.18, minZoom: 0.68, maxZoom: 1 }} minZoom={0.6} maxZoom={1.25} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false} onNodeClick={(_, node) => router.push(`/mathematician?id=${encodeURIComponent(node.id)}`)}>
         </ReactFlow>
       </div>
     </section>

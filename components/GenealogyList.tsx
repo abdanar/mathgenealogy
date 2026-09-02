@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 function PersonEntry({ mathematician }: { mathematician: Mathematician }) {
   return (
     <li className="genealogy-list__entry">
-      <Link className="genealogy-list__link" href={`/mathematician/${mathematician.id}`}>
+      <Link className="genealogy-list__link" href={`/mathematician?id=${encodeURIComponent(mathematician.id)}`}>
         <div className="genealogy-list__person">
           <h3>{mathematician.name}</h3>
           {mathematician.university && <p className="genealogy-list__institution">{mathematician.university}</p>}

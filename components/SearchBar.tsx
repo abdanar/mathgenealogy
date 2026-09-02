@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
-import { searchMathematiciansAction } from "@/app/actions/search";
+import { fetchAutocomplete } from "@/lib/api-client";
 import type { Mathematician } from "@/types/genealogy";
 
 type SearchBarProps = {
@@ -20,6 +20,7 @@ export function SearchBar({ autoFocus = false, compact = false, home = false, on
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
   const [results, setResults] = useState<Mathematician[]>([]);
+  const [hasError, setHasError] = useState(false);
   const isOpen = query.trim().length >= 2;
   const displayedResults = home ? results.slice(0, 6) : results;
   const hasMoreResults = home && results.length > displayedResults.length;
@@ -27,14 +28,15 @@ export function SearchBar({ autoFocus = false, compact = false, home = false, on
   useEffect(() => {
     if (!isOpen) {
       setResults([]);
+      setHasError(false);
       return;
     }
 
     let isCurrent = true;
     const timeout = window.setTimeout(() => {
-      void searchMathematiciansAction(query).then((matches) => {
-        if (isCurrent) setResults(matches);
-      });
+      void fetchAutocomplete(query)
+        .then((matches) => { if (isCurrent) setResults(matches); })
+        .catch(() => { if (isCurrent) setHasError(true); });
     }, 225);
 
     return () => {
@@ -46,7 +48,7 @@ export function SearchBar({ autoFocus = false, compact = false, home = false, on
   function selectMathematician(mathematician: Mathematician) {
     setQuery("");
     setResults([]);
-    router.push(`/mathematician/${mathematician.id}`);
+    router.push(`/mathematician?id=${encodeURIComponent(mathematician.id)}`);
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -95,7 +97,7 @@ export function SearchBar({ autoFocus = false, compact = false, home = false, on
             </button>
             ))}
             {hasMoreResults && <Link className="search__all-results" href={`/search?q=${encodeURIComponent(query.trim())}`}>View all results →</Link>}
-          </> : <p className="search__empty">No mathematicians found.</p>}
+          </> : <p className="search__empty">{hasError ? "Search is temporarily unavailable." : "No mathematicians found."}</p>}
         </div>
       )}
     </div>

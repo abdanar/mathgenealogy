@@ -2,10 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useState, useTransition } from "react";
-import {
-  findDescendantPathAction,
-  searchMathematiciansAction,
-} from "@/app/actions/search";
+import { fetchAutocomplete, fetchGenealogyPath } from "@/lib/api-client";
 import type { GenealogyPath, Mathematician } from "@/types/genealogy";
 
 type PickerProps = {
@@ -21,19 +18,21 @@ function MathematicianPicker({ label, placeholder, onSelect, onClear }: PickerPr
   const [matches, setMatches] = useState<Mathematician[]>([]);
   const [hasSelection, setHasSelection] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [hasError, setHasError] = useState(false);
   const displayedMatches = matches.slice(0, 6);
   const hasMoreMatches = matches.length > displayedMatches.length;
 
   useEffect(() => {
     if (query.trim().length < 2 || hasSelection) {
       setMatches([]);
+      setHasError(false);
       return;
     }
     let isCurrent = true;
     const timeout = window.setTimeout(() => {
-      void searchMathematiciansAction(query).then((results) => {
-        if (isCurrent) setMatches(results);
-      });
+      void fetchAutocomplete(query)
+        .then((results) => { if (isCurrent) setMatches(results); })
+        .catch(() => { if (isCurrent) setHasError(true); });
     }, 225);
     return () => { isCurrent = false; window.clearTimeout(timeout); };
   }, [hasSelection, query]);
@@ -112,7 +111,7 @@ function MathematicianPicker({ label, placeholder, onSelect, onClear }: PickerPr
             </button>
           ))}
           {hasMoreMatches && <Link className="path-picker__all-results" href={`/search?q=${encodeURIComponent(query.trim())}`}>View all results →</Link>}
-          {matches.length === 0 && <p>No mathematicians found.</p>}
+          {matches.length === 0 && <p>{hasError ? "Search is temporarily unavailable." : "No mathematicians found."}</p>}
         </div>
       )}
     </div>
@@ -127,7 +126,7 @@ function Lineage({ path }: { path: GenealogyPath }) {
         {path.mathematicians.map((mathematician, index) => (
           <li key={mathematician.id}>
             {index > 0 && <span className="path-result__connector" aria-hidden="true" />}
-            <Link href={`/mathematician/${mathematician.id}`}>
+            <Link href={`/mathematician?id=${encodeURIComponent(mathematician.id)}`}>
               <strong>{mathematician.name}</strong>
               {(mathematician.university || mathematician.degreeYear) && (
                 <small>{mathematician.university}{mathematician.university && mathematician.degreeYear ? " · " : ""}{mathematician.degreeYear}</small>
@@ -146,13 +145,20 @@ export function PathFinder() {
   const [target, setTarget] = useState<Mathematician>();
   const [result, setResult] = useState<GenealogyPath | undefined>();
   const [hasSearched, setHasSearched] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function findPath(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!source || !target) return;
     startTransition(async () => {
-      setResult(await findDescendantPathAction(source.id, target.id));
+      try {
+        setResult(await fetchGenealogyPath(source.id, target.id));
+        setHasError(false);
+      } catch {
+        setResult(undefined);
+        setHasError(true);
+      }
       setHasSearched(true);
     });
   }
@@ -167,7 +173,7 @@ export function PathFinder() {
           {isPending ? "Finding relationship..." : "Find relationship"}
         </button>
       </form>
-      {hasSearched && (result ? <Lineage path={result} /> : <p className="path-empty" aria-live="polite">No recorded descendant path found.</p>)}
+      {hasSearched && (result ? <Lineage path={result} /> : <p className="path-empty" aria-live="polite">{hasError ? "Relationship search is temporarily unavailable." : "No recorded descendant path found."}</p>)}
     </>
   );
 }

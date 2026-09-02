@@ -20,7 +20,7 @@ This project is an experiment in AI-assisted software development. I defined the
 
 The application source code and genealogy data are separate. The local database, `data/mg.db`, is deliberately ignored by Git and is not distributed with this repository.
 
-The application uses the *Curated Mathematics Genealogy Project: Database and Reproducibility Code* (Bar, H., Spencer, N. A., Guo, X., Schifano, E. D., & Yan, J., 2026), distributed through Zenodo: https://doi.org/10.5281/zenodo.20683099. The Mathematics Genealogy Project is the underlying genealogy source.
+The application uses the *Curated Mathematics Genealogy Project: Database and Reproducibility Code* (Bar, H., Spencer, N. A., Guo, X., Schifano, E. D., & Yan, J., 2026), distributed through Zenodo: [10.5281/zenodo.20683099](https://doi.org/10.5281/zenodo.20683099). The Mathematics Genealogy Project is the underlying genealogy source.
 
 The database and other third-party data are governed by their own terms and licensing. Any source-code license for this repository does not grant rights to external datasets.
 
@@ -33,7 +33,13 @@ npm install
 npm run dev
 ```
 
-Place the required local database at `data/mg.db`, then open http://localhost:3000. Do not commit the database.
+Place the required local database at `data/mg.db`, then open [http://localhost:3000](http://localhost:3000). Do not commit the database.
+
+## Deployment architecture
+
+The frontend is a static Next.js export intended for GitHub Pages at [https://abdanar.github.io/mathgenealogy/](https://abdanar.github.io/mathgenealogy/). It requests genealogy data from a separately deployed Node.js and SQLite API.
+
+Set `NEXT_PUBLIC_MATHGENEALOGY_API_URL` to the API base URL before building the frontend. Run the API locally with `npm run api`; set `MATHGENEALOGY_DB_PATH` when the database is not at the local default, `data/mg.db`. Configure `MATHGENEALOGY_ALLOWED_ORIGINS` as a comma-separated origin allowlist for the API; it defaults to `http://localhost:3000` and `https://abdanar.github.io`.
 
 ## Project structure
 

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { PaginatedMathematicians } from "@/lib/data/repository";
 import type { Mathematician } from "@/types/genealogy";
 
 export function SearchResults({ mathematicians }: { mathematicians: Mathematician[] }) {
@@ -7,7 +6,7 @@ export function SearchResults({ mathematicians }: { mathematicians: Mathematicia
     <ul className="search-page__results">
       {mathematicians.map((mathematician) => (
         <li key={mathematician.id}>
-          <Link href={`/mathematician/${mathematician.id}`}>
+          <Link href={`/mathematician?id=${encodeURIComponent(mathematician.id)}`}>
             <h2>{mathematician.name}</h2>
             {(mathematician.university || mathematician.degreeYear) && (
               <p>{mathematician.university}{mathematician.university && mathematician.degreeYear ? " · " : ""}{mathematician.degreeYear}</p>
@@ -31,7 +30,7 @@ export function SearchPagination({
   query,
   page,
   totalPages,
-}: Pick<PaginatedMathematicians, "page" | "totalPages"> & { query: string }) {
+}: { query: string; page: number; totalPages: number }) {
   if (totalPages <= 1) return null;
 
   const hrefForPage = (nextPage: number) => `/search?q=${encodeURIComponent(query)}&page=${nextPage}`;

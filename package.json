@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "npm run api:start",
+    "lint": "eslint",
+    "api": "tsx backend/server.ts",
+    "api:start": "tsx backend/server.ts"
   },
   "dependencies": {
     "@dagrejs/dagre": "^3.1.1",
@@ -26,6 +28,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
