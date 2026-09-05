@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { GenealogyList } from "@/components/GenealogyList";
 import { HeaderSearch } from "@/components/HeaderSearch";
 import { MathematicianHeader } from "@/components/MathematicianHeader";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { fetchLocalGenealogy } from "@/lib/api-client";
 import type { LocalGenealogy } from "@/types/genealogy";
 
@@ -31,8 +32,8 @@ export function MathematicianPageClient() {
   return (
     <main className="profile">
       <div className="profile__search">
-        <Link className="wordmark" href="/">Math<span style={{ color: "var(--accent)" }}>Genealogy</span></Link>
-        <div className="profile__tools"><Link href="/path">Path</Link><HeaderSearch /></div>
+        <Link className="wordmark" href="/">Math<span style={{ color: "var(--accent-fg)" }}>Genealogy</span></Link>
+        <div className="profile__tools"><Link href="/path">Path</Link><ThemeToggle /><HeaderSearch /></div>
       </div>
       {genealogy ? <><MathematicianHeader mathematician={genealogy.subject} advisors={genealogy.advisors} /><GenealogyList students={genealogy.students} /></> : <p className="path-empty" aria-live="polite">{status === "loading" ? "Loading mathematician..." : status === "missing" ? "Mathematician not found." : "Mathematician data is temporarily unavailable."}</p>}
     </main>

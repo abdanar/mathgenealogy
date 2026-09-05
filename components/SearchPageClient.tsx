@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { HeaderSearch } from "@/components/HeaderSearch";
 import { SearchPagination, SearchResults } from "@/components/SearchResults";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { fetchSearchResults, type SearchResultsPage } from "@/lib/api-client";
 
 export function SearchPageClient() {
@@ -32,8 +33,8 @@ export function SearchPageClient() {
   return (
     <main className="search-page">
       <div className="profile__search">
-        <Link className="wordmark" href="/">Math<span style={{ color: "var(--accent)" }}>Genealogy</span></Link>
-        <div className="profile__tools"><Link href="/path">Path</Link><HeaderSearch /></div>
+        <Link className="wordmark" href="/">Math<span style={{ color: "var(--accent-fg)" }}>Genealogy</span></Link>
+        <div className="profile__tools"><Link href="/path">Path</Link><ThemeToggle /><HeaderSearch /></div>
       </div>
       <header className="search-page__header">
         <p className="eyebrow">Mathematicians</p>
